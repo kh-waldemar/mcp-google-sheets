@@ -14,7 +14,7 @@ export const createSpreadSheet = async (
         "Failed to create spreadsheet: No spreadsheet ID returned"
       );
     }
-    // console.log("spreadsheet:", spreadsheet);
+   
     const id = spreadsheet.data.spreadsheetId!;
     const link = spreadsheet.data.spreadsheetUrl;
     try {
@@ -31,8 +31,6 @@ export const createSpreadSheet = async (
     } catch (permissionError) {
       console.log("Error granting permissions:", permissionError);
     }
-    // console.log("id:", id);
-    // console.log("link:", link);
     if (context.folderId) {
       try {
         const file = await context.drive.files.get({
@@ -40,8 +38,6 @@ export const createSpreadSheet = async (
           fields: "parents",
         });
         const prev = file.data.parents?.join(",") || "";
-        // console.log(prev);
-        // console.log(context.folderId);
         await context.drive.files.update({
           fileId: id,
           addParents: context.folderId,
