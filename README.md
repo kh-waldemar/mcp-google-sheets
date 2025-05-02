@@ -53,12 +53,12 @@ A TypeScript Model Context Protocol (MCP) server that lets AI agents securely in
    ```bash
    git clone https://github.com/yourusername/mcp-google-sheets.git
    cd mcp-google-sheets
-Install dependencies
+2. Install dependencies
 
 ```bash
 bun install
 ```
-Configure environment
+3. Configure environment
 Create a .env (or export) with:
 ```bash
 # Base64-encoded service-account key JSON (optional)
