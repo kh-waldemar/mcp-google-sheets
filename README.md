@@ -53,12 +53,13 @@ A TypeScript Model Context Protocol (MCP) server that lets AI agents securely in
    ```bash
    git clone https://github.com/yourusername/mcp-google-sheets.git
    cd mcp-google-sheets
-2. Install dependencies
+2. **Install dependencies**
 
 ```bash
 bun install
 ```
-3. Configure environment
+3. **Configure environment**
+   
 Create a .env (or export) with:
 ```bash
 # Base64-encoded service-account key JSON (optional)
@@ -76,28 +77,29 @@ Tip: On Linux/macOS you can do
 ```bash
 export CREDENTIALS_CONFIG=$(base64 service_account.json | tr -d '\n')
 ```
-▶️ Running the Server
+## ▶️ Running the Server
 ```bash
 bun index.ts
 ```
 On first OAuth2 run (if using credentials.json), you’ll see a URL. Visit it, grant access, then paste the code back into your terminal. A token.json will be generated automatically.
 
-🔧 How It Works
-Initialization
+## 🔧 How It Works
 
-initContext() picks your auth method (Service-Account → OAuth2 → error).
+**Initialization**
 
-Builds google.sheets & google.drive clients and stores them in a shared context.
+- initContext() picks your auth method (Service-Account → OAuth2 → error).
 
-MCP Tool Registration
+- Builds google.sheets & google.drive clients and stores them in a shared context.
 
-Each “tool” (e.g. create, listSheets, sheetData) is registered via server.tool(...).
+**MCP Tool Registration**
 
-Transport
+- Each “tool” (e.g. create, listSheets, sheetData) is registered via server.tool(...).
 
-Uses StdioServerTransport so Claude can invoke tools over stdin/stdout.
+**Transport**
 
-Invocation
+- Uses StdioServerTransport so Claude can invoke tools over stdin/stdout.
+
+**Invocation**
 
 The agent sends a JSON request:
 
@@ -106,17 +108,20 @@ The agent sends a JSON request:
 ```
 The server runs your handler, calls Google APIs, and returns JSON-wrapped results.
 
-🛠️ Try It Out
+## 🛠️ Try It Out
+
 Clone & configure as above.
 
 Start the server:
 
 ```bash
 bun index.ts
-Invoke a tool via Claude:
+Invoke a tool via Claude
 ```
-❤️ Contributing
+## ❤️ Contributing
+
 Feel free to open issues or PRs for new tools, bug fixes, and enhancements.
 
-📄 License
+## 📄 License
+
 MIT © Rohan Sharma
