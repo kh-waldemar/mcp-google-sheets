@@ -118,6 +118,12 @@ Start the server:
 bun index.ts
 Invoke a tool via Claude
 ```
+## Demo
+
+<img width="1274" alt="mcp-google-sheets" src="https://github.com/user-attachments/assets/979d4fec-f5f1-42ff-bdc6-765b992f98a9" />
+![1746080488400](https://github.com/user-attachments/assets/8debf03e-7da6-4d2a-93eb-2a41c49e4d73)
+
+
 ## ❤️ Contributing
 
 Feel free to open issues or PRs for new tools, bug fixes, and enhancements.
