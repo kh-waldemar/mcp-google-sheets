@@ -122,6 +122,3 @@ Invoke a tool via Claude
 
 Feel free to open issues or PRs for new tools, bug fixes, and enhancements.
 
-## 📄 License
-
-MIT © Rohan Sharma
