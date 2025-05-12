@@ -65,10 +65,13 @@ Create a .env (or export) with:
 # Base64-encoded service-account key JSON (optional)
 CREDENTIALS_CONFIG=BASE-64 ENCODED SERVICE_ACCOUNT.JSON
 
+
 # Or put your OAuth2 JSON files next to index.ts:
 #   credentials.json  (OAuth client secret)
 #   token.json        (generated after first OAuth run)
 
+# The google email address that you'll use to access the spreadsheet
+EMAIL_ID="Enter the email address you’ll use to access the spreadsheet"
 # (Optional) ID of the Drive folder to store new sheets
 DRIVE_FOLDER_ID=1a2B3c4D5e6F...
 ```
