@@ -23,7 +23,7 @@ export const createSpreadSheet = async (
         requestBody: {
           type: "user",
           role: "writer", // or 'reader', 'commenter'
-          emailAddress: "rohansharma1808@gmail.com",
+          emailAddress: "process.env.EMAIL_ID",
         },
         sendNotificationEmail: true, // optional: have Google send them an email
         fields: "id",
