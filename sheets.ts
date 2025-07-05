@@ -188,3 +188,58 @@ export const copySheet = async(srcSpreadsheet: string, srcSheet: string, dstSpre
   }
   return {copy: copyRes.data}
 }
+
+export const formatCells = async (
+  spreadsheetId: string,
+  sheet: string,
+  range: string,
+  backgroundColor: { red: number; green: number; blue: number },
+  context: SpreadsheetContext
+) => {
+  const meta = await context.sheets.spreadsheets.get({ spreadsheetId });
+  const sheetObj = meta.data.sheets?.find(s => s.properties?.title === sheet);
+  if (!sheetObj) return 'Sheet not found';
+  const sheetId = sheetObj.properties?.sheetId!;
+  const gridRange = a1ToGridRange(range, sheetId);
+  const requestBody = {
+    requests: [
+      {
+        repeatCell: {
+          range: gridRange,
+          cell: { userEnteredFormat: { backgroundColor } },
+          fields: 'userEnteredFormat.backgroundColor'
+        }
+      }
+    ]
+  };
+  const result = await context.sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody
+  });
+  return result.data;
+};
+
+function a1ToGridRange(a1: string, sheetId: number) {
+  const match = /^([A-Za-z]+)(\d+)?(?::([A-Za-z]+)(\d+)?)?$/.exec(a1);
+  if (!match) throw new Error('Invalid A1 range');
+  const startCol = colToIndex(match[1]!);
+  const startRow = match[2] ? parseInt(match[2], 10) - 1 : 0;
+  const endCol = match[3] ? colToIndex(match[3]) + 1 : startCol + 1;
+  const endRow = match[4] ? parseInt(match[4], 10) : startRow + 1;
+  return {
+    sheetId,
+    startRowIndex: startRow,
+    endRowIndex: endRow,
+    startColumnIndex: startCol,
+    endColumnIndex: endCol
+  };
+}
+
+function colToIndex(col: string) {
+  let index = 0;
+  for (const char of col.toUpperCase()) {
+    index = index * 26 + (char.charCodeAt(0) - 64);
+  }
+  return index - 1;
+}
+
