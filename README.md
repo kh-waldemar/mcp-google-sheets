@@ -86,6 +86,8 @@ bun index.ts
 ```
 On first OAuth2 run (if using credentials.json), you’ll see a URL. Visit it, grant access, then paste the code back into your terminal. A token.json will be generated automatically.
 
+The server exposes an SSE endpoint at `http://localhost:3000/sse`. Clients send POST requests to `http://localhost:3000/messages?sessionId=...`.
+
 ## 🔧 How It Works
 
 **Initialization**
@@ -100,7 +102,7 @@ On first OAuth2 run (if using credentials.json), you’ll see a URL. Visit it, g
 
 **Transport**
 
-- Uses StdioServerTransport so Claude can invoke tools over stdin/stdout.
+- Uses an HTTP SSE server so MCP clients can connect via `/sse` and POST messages to `/messages`.
 
 **Invocation**
 
@@ -119,8 +121,9 @@ Start the server:
 
 ```bash
 bun index.ts
-Invoke a tool via Claude
 ```
+
+Connect your MCP client to `http://localhost:3000/sse` and invoke tools as usual.
 ## Demo
 
 <img width="1274" alt="mcp-google-sheets" src="https://github.com/user-attachments/assets/979d4fec-f5f1-42ff-bdc6-765b992f98a9" />

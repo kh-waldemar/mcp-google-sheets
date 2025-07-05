@@ -1,12 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import express, { type Request, type Response } from "express";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from "zod";
 
 import {google} from 'googleapis'
 import fs from 'fs'
 import readline from "readline";
 import type { SpreadsheetContext } from "./types";
-import { addColumns, addRows, batchUpdate, copySheet, createSheet, createSpreadSheet, listSheets, listSpreadsheets, renameSheet, shareSpreadsheet, sheetData, spreadsheetInfo, updateCells } from './sheets';
+import { addColumns, addRows, batchUpdate, copySheet, createSheet, createSpreadSheet, listSheets, listSpreadsheets, renameSheet, shareSpreadsheet, sheetData, spreadsheetInfo, updateCells, formatCells } from './sheets';
 
 
 const server = new McpServer({
@@ -350,14 +351,69 @@ server.tool("copySheet", "Copies the contents of the source sheet to destination
   }
 )
 
+server.tool(
+  "formatCells",
+  "Updates background color for a range of cells in the specified sheet.",
+  {
+    spreadsheet_id: z.string(),
+    sheet: z.string(),
+    range: z.string(),
+    background_color: z.object({
+      red: z.number(),
+      green: z.number(),
+      blue: z.number(),
+    }),
+  },
+  async ({ spreadsheet_id, sheet, range, background_color }) => {
+    const res = await formatCells(
+      spreadsheet_id,
+      sheet,
+      range,
+      background_color,
+      context
+    );
+    return {
+      content: [
+        { type: "text", text: `Cells formatted successfully. ${JSON.stringify(res)}` }
+      ],
+    };
+  }
+);
+
 async function startServer() {
   try {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
     await initContext();
-    
+
+    const app = express();
+    app.use(express.json());
+
+    const transports: Record<string, SSEServerTransport> = {};
+
+    app.get('/sse', async (req: Request, res: Response) => {
+      const transport = new SSEServerTransport('/messages', res);
+      transports[transport.sessionId] = transport;
+      res.on('close', () => {
+        delete transports[transport.sessionId];
+      });
+      await server.connect(transport);
+    });
+
+    app.post('/messages', async (req: Request, res: Response) => {
+      const sessionId = req.query.sessionId as string;
+      const transport = transports[sessionId];
+      if (transport) {
+        await transport.handlePostMessage(req, res, req.body);
+      } else {
+        res.status(400).send('No transport found for sessionId');
+      }
+    });
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`MCP HTTP SSE Server listening on port ${PORT}`);
+    });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }
